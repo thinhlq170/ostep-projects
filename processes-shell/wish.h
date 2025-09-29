@@ -8,4 +8,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#define EXIT_COMMAND "exit"
+#define CHDIR_COMMAND "cd"
+#define PATH_COMMAND "path"
+
 #endif

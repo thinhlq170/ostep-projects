@@ -52,21 +52,32 @@ int strCmp(const char *s1, const char *s2) {
     return 0;
 }
 
-void formatLine(const char *line, char buf[]) {
-    int index = 0;
+void formatLine(const char *curLine, char buf[]) {
+    const char *line = curLine;
 
+    // skip leading spaces
     while (isspace(*line)) {
         ++line;
     }
 
     int i = 0;
     while (*line != '\n') {
+        // skip redundant spaces between words in the line
+        if (isspace(*line)) {
+            int j = 1;
+            while (isspace(*(line + j))) { // *(line + j) is the next character
+                line++;
+            }
+        }
         buf[i] = *line;
         i++;
         ++line;
     }
+    // replace '\n' by '\0' to mark end of line
     buf[i] = '\0';
 }
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -79,9 +90,6 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    
-    
-
     if (programName != NULL) {
         char *line = NULL;
         size_t len = 0;
@@ -93,13 +101,29 @@ int main(int argc, char *argv[]) {
                 char formatedLine[MAX_LINE];
                 formatLine(line, formatedLine);
 
-                if (strCmp(formatedLine, "exit") == 0) {
-                    printf("exit!!!\n");
-                    break;
+                char *originalLine = strdup(formatedLine);
+                char *curLine = originalLine;
+
+                char *command;
+                if ((command = strsep(&curLine, " ")) != NULL) {
+                    if (strCmp(command, EXIT_COMMAND) == 0) {
+                        break;
+                    } else if (strCmp(command, CHDIR_COMMAND) == 0) {
+                        printf("built-in command: %s\n", command);
+                    } else if (strCmp(command, PATH_COMMAND) == 0) {
+                        printf("built-in command: %s\n", command);
+                    } else {
+                        printf("user command: %s\n", command);
+                    }
                 }
-            }
-            
-            
+
+                char *firstArg;
+                if ((firstArg = strsep(&curLine, " ")) != NULL) {
+                    printf("The first argument: %s\n", firstArg);
+                }
+
+                free(originalLine);
+            }  
         }
         free(line);
         free(programName);
