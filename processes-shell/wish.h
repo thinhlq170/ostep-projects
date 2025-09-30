@@ -7,9 +7,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <sys/wait.h>
 
 #define EXIT_COMMAND "exit"
 #define CHDIR_COMMAND "cd"
 #define PATH_COMMAND "path"
+#define USR_EXE_PATH "/usr/bin/"
+#define BIN_EXE_PATH "/bin/"
 
 #endif

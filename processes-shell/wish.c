@@ -1,6 +1,8 @@
 #include "wish.h"
 
 #define MAX_LINE 1024
+#define MAX_ARGS 128
+#define MAX_WORD 64
 
 char *getProgramName(const char *program) {
     size_t programeNameLength = strlen(program);
@@ -68,6 +70,69 @@ void formatLine(const char *curLine, char buf[]) {
     buf[i] = '\0';
 }
 
+char *getAccessedPath(char *command) {
+    const char *dupCommand = strdup(command);
+    char *binExePath = strdup(BIN_EXE_PATH);
+    char *usrExePath = strdup(USR_EXE_PATH);
+
+    binExePath = strcat(binExePath, dupCommand);
+    usrExePath = strcat(usrExePath, dupCommand);
+
+    int isBinExe = access(binExePath, X_OK);
+    int isUsrExe = access(usrExePath, X_OK);
+
+    if (isBinExe == 0) {
+        return binExePath;
+    } else if (isUsrExe == 0) {
+        return usrExePath;
+    }
+
+    return NULL;
+
+    
+}
+
+void handleUserCommand(char *originalLine) {
+    char *curLine = originalLine;
+    char *command;
+    char *args[MAX_ARGS];
+
+    
+    if ((command = strsep(&curLine, " ")) != NULL) {
+        args[0] = strdup(command);
+        int i = 1;
+        char *arg;
+        while ((arg = strsep(&curLine, " ")) != NULL) {
+            args[i] = strdup(arg);
+            i++;
+        }
+        args[i] = NULL; // to mark end of arguments
+        char *newEnv[] = { NULL };
+
+        char *exePath = getAccessedPath(command);
+
+        if (exePath != NULL) {
+            pid_t childPId;
+
+            switch (childPId = fork())
+            {
+            case -1:
+                fprintf(stderr, "Fork fail. Cannot execute the command\n");
+                break;
+            case 0:
+                execve(exePath, args, newEnv);
+            
+            default:
+                wait(NULL);
+                break;
+            }
+            free(exePath);
+        } else {
+            printf("%s: command not found\n", command);
+        }
+    }
+}
+
 void handleInteractiveMode(char *argv[]) {
     const char *program = argv[0];
 
@@ -96,13 +161,10 @@ void handleInteractiveMode(char *argv[]) {
                     } else if (strCmp(command, PATH_COMMAND) == 0) {
                         printf("built-in command: %s\n", command);
                     } else {
-                        printf("user command: %s\n", command);
+                        char *commandLine = strdup(formatedLine);
+                        handleUserCommand(commandLine);
+                        free(commandLine);
                     }
-                }
-
-                char *firstArg;
-                if ((firstArg = strsep(&curLine, " ")) != NULL) {
-                    printf("The first argument: %s\n", firstArg);
                 }
 
                 free(originalLine);
