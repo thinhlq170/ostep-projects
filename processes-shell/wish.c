@@ -19,15 +19,6 @@ char *getProgramName(const char *program) {
     return NULL;
 }
 
-char *strCpy(char *dst, const char *src) {
-    char *s = dst;
-
-    while (*dst++ = *src++)
-        ;
-        
-    return s;
-}
-
 int strCmp(const char *s1, const char *s2) {
     int i = 0;
     size_t s1len = strlen(s1);
@@ -77,18 +68,10 @@ void formatLine(const char *curLine, char buf[]) {
     buf[i] = '\0';
 }
 
-
-
-int main(int argc, char *argv[]) {
-
+void handleInteractiveMode(char *argv[]) {
     const char *program = argv[0];
 
     char *programName = getProgramName(program);
-
-    if (argc > 2) {
-        fprintf(stderr, "%s or %s <string>\n", programName, programName);
-        exit(1);
-    }
 
     if (programName != NULL) {
         char *line = NULL;
@@ -128,7 +111,27 @@ int main(int argc, char *argv[]) {
         free(line);
         free(programName);
     }
+}
+
+
+
+int main(int argc, char *argv[]) {
+
+    const char *program = argv[0];
+
+    char *programName = getProgramName(program);
+
+    if (argc > 2) {
+        fprintf(stderr, "%s or %s <string>\n", programName, programName);
+        exit(1);
+    } else if (argc == 2) {
+        // handle batch mode
+    } else {
+        handleInteractiveMode(argv);
+    }
+
     
+    free(programName);
 
     return 0;
 }
