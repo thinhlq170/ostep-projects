@@ -81,6 +81,8 @@ char *getAccessedPath(char *command) {
     int isBinExe = access(binExePath, X_OK);
     int isUsrExe = access(usrExePath, X_OK);
 
+    // TODO: handling case of input path is an absolute path
+
     if (isBinExe == 0) {
         return binExePath;
     } else if (isUsrExe == 0) {
@@ -113,6 +115,7 @@ void handleUserCommand(char *originalLine) {
 
         if (exePath != NULL) {
             pid_t childPId;
+            
 
             switch (childPId = fork())
             {
@@ -121,9 +124,20 @@ void handleUserCommand(char *originalLine) {
                 break;
             case 0:
                 execve(exePath, args, newEnv);
-            
+                break;
             default:
-                wait(NULL);
+
+                int commandStatus;
+
+                waitpid(childPId, &commandStatus, 0);
+                if (WIFEXITED(commandStatus)) {
+                    int exitStatus = WEXITSTATUS(commandStatus);
+                    if (exitStatus != 0) {
+                        fprintf(stderr, "Fail command execution. Error code: %d\n", exitStatus);
+                    }
+                } else {
+                    printf("Child process did not exit normally\n");
+                }
                 break;
             }
             free(exePath);
