@@ -144,6 +144,48 @@ void handleUserCommand(char *originalLine) {
         } else {
             printf("%s: command not found\n", command);
         }
+
+        for(int j = 0; j < i; j++) {
+            free(args[j]);
+        }
+    }
+}
+
+void handleChDirCommand(char *originalLine) {
+    char *curLine = originalLine;
+    char *command;
+    char *args[MAX_ARGS];
+
+    if ((command = strsep(&curLine, " ")) != NULL) {
+        int i = 0;
+        args[i] = strdup(command);
+
+        char *arg;
+        while ((arg = strsep(&curLine, " ")) != NULL) {
+            ++i;
+            args[i] = strdup(arg);
+        }
+
+
+        if (i == 0 || i > 1) {
+            fprintf(stderr, "%s <path>\n", command);
+        } else {
+            // TODO: validate the path before proceeding chdir command
+            switch (chdir(args[1]))
+            {
+            case -1:
+                fprintf(stderr, "Chang directory fail\n");
+                break;
+            
+            default:
+                break;
+            }
+        }
+
+        for (int j = 0; j < 2; j++) {
+            free(args[j]);
+        }
+
     }
 }
 
@@ -155,8 +197,17 @@ void handleInteractiveMode(char *argv[]) {
     if (programName != NULL) {
         char *line = NULL;
         size_t len = 0;
+        // char *path = NULL;
         while (1) {
+            // if (path == NULL) {
+            //     printf("%s> ", programName);
+            // } else {
+            //     char *catPath = strdup(path);
+            //     strdup(catPath, programName);
+            //     printf("%s> ", catPath);
+            // }
             printf("%s> ", programName);
+            
             if ((getline(&line, &len, stdin)) != -1) {
 
                 // remove spaces and format the input line
@@ -168,17 +219,18 @@ void handleInteractiveMode(char *argv[]) {
 
                 char *command;
                 if ((command = strsep(&curLine, " ")) != NULL) {
+                    char *commandLine = strdup(formatedLine);
                     if (strCmp(command, EXIT_COMMAND) == 0) {
                         break;
                     } else if (strCmp(command, CHDIR_COMMAND) == 0) {
-                        printf("built-in command: %s\n", command);
+                        handleChDirCommand(commandLine);
+
                     } else if (strCmp(command, PATH_COMMAND) == 0) {
                         printf("built-in command: %s\n", command);
                     } else {
-                        char *commandLine = strdup(formatedLine);
                         handleUserCommand(commandLine);
-                        free(commandLine);
                     }
+                    free(commandLine);
                 }
 
                 free(originalLine);
