@@ -108,7 +108,7 @@ int isRedirectedCommand(char *args[], size_t argcSize) {
 void freeCharArr(char *arr[]) {
     size_t i = 0;
     while (arr[i] != NULL) {
-        free(arr[i]);
+        free(arr[i++]);
     }
 }
 
@@ -147,7 +147,9 @@ void handleUserCommand(char *originalLine) {
                     char *commandArgs[MAX_ARGS];
                     // take the command before the directed mark ">"
                     size_t j = 0;
-                    while (j < i - 2) {
+                    // separated at ">" which is far from NULL 2 elements. But index starts with 0. Therefore, index subtract 3 instead of 2
+                    // TODO: handling more than 1 argument after ">"
+                    while (j <= i - 3) { 
                         commandArgs[j] = strdup(args[j]);
                         ++j;
                     }
