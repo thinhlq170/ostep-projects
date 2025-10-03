@@ -122,7 +122,7 @@ void handleUserCommand(char *originalLine) {
         args[0] = strdup(command);
         size_t i = 1;
         char *arg;
-        while ((arg = strsep(&curLine, " ")) != NULL) {
+        while (curLine != NULL && (arg = strsep(&curLine, " ")) != NULL) {
             args[i] = strdup(arg);
             i++;
         }
@@ -137,7 +137,7 @@ void handleUserCommand(char *originalLine) {
             switch (childPId = fork())
             {
             case -1:
-                fprintf(stderr, "Fork fail. Cannot execute the command\n");
+                printf("An error has occurred\n");
                 break;
             case 0:
                 if (isRedirectedCommand(args, i) == 0) {
@@ -169,16 +169,16 @@ void handleUserCommand(char *originalLine) {
                 if (WIFEXITED(commandStatus)) {
                     int exitStatus = WEXITSTATUS(commandStatus);
                     if (exitStatus != 0) {
-                        fprintf(stderr, "Fail command execution. Error code: %d\n", exitStatus);
+                        fprintf(stderr, "An error has occurred\n");
                     }
                 } else {
-                    printf("Child process did not exit normally\n");
+                    printf("An error has occurred\n");
                 }
                 break;
             }
             free(exePath);
         } else {
-            printf("%s: command not found\n", command);
+            printf("An error has occurred\n");
         }
 
         freeCharArr(args);
@@ -195,20 +195,20 @@ void handleChDirCommand(char *originalLine) {
         args[i] = strdup(command);
 
         char *arg;
-        while ((arg = strsep(&curLine, " ")) != NULL) {
+        while (curLine != NULL && (arg = strsep(&curLine, " ")) != NULL) {
             ++i;
             args[i] = strdup(arg);
         }
 
 
         if (i == 0 || i > 1) {
-            fprintf(stderr, "%s <path>\n", command);
+            printf("An error has occurred\n");
         } else {
             // TODO: validate the path before proceeding chdir command
             switch (chdir(args[1]))
             {
             case -1:
-                fprintf(stderr, "Chang directory fail\n");
+                printf("An error has occurred\n");
                 break;
             
             default:
@@ -241,7 +241,7 @@ void handleInteractiveMode(char *argv[]) {
                 char *curLine = originalLine;
 
                 char *command;
-                if ((command = strsep(&curLine, " ")) != NULL) {
+                if (curLine != NULL && (command = strsep(&curLine, " ")) != NULL) {
                     char *commandLine = strdup(formatedLine);
                     if (strCmp(command, EXIT_COMMAND) == 0) {
                         free(commandLine);
@@ -273,7 +273,7 @@ int main(int argc, char *argv[]) {
     char *programName = getProgramName(program);
 
     if (argc > 2) {
-        fprintf(stderr, "%s or %s <string>\n", programName, programName);
+        printf("An error has occurred\n");
         exit(1);
     } else if (argc == 2) {
         // handle batch mode
