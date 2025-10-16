@@ -3,10 +3,11 @@
 
 #define MAX_LINE 1024
 
-void proceed_wcat(char *program_name, char *filePath) {
+void proceed_wcat(const char *program_name, char *filePath) {
     FILE *file = fopen(filePath, "r");
 
     char buffer[MAX_LINE];
+    
     
     if (file != NULL) {
         while (fgets(buffer, MAX_LINE, file) != NULL) {
