@@ -34,6 +34,7 @@ int main(int argc, char *argv[]) {
 
     *(program_name + i - 2) = '\0';
 
+    // exclude the first argument which is the program name
     for (int i = 1; i < argc; i++) {
         proceed_wcat(program_name, argv[i]);
     }
