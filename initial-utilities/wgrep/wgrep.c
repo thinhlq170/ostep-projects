@@ -37,7 +37,7 @@ int isContained(const char *searchterm, const char *line) {
     return -1;
 }
 
-void greping(const char *searchterm, FILE *stream) {
+void grepping(const char *searchterm, FILE *stream) {
     char *buffer;
     size_t n;
 
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
         return 1;
 
     } else if (argc == 2) { // search in stdin
-        greping(argv[1], stdin);
+        grepping(argv[1], stdin);
     } else { // search in files
         int i = 2;
         
@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
             file = fopen(argv[i], "r");
 
             if (file != NULL) {
-                greping(argv[1], file);
+                grepping(argv[1], file);
             } else {
                 printf("%s: cannot open file\n", programName);
                 return 1;
