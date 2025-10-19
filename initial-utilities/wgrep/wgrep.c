@@ -1,23 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-
-void getProgramName(const char *programArg, char *programName) {
-    
-    if (sizeof(programName) < (sizeof(programArg) - 2)) {
-        printf("programeName was not allocated sufficiently!\n");
-        return;
-    }
-
-    size_t i = 2;
-    while (*(programArg + i) != '\0') {
-        *(programName + i - 2) = *(programArg + i);
-        i++;
-    }
-
-    *(programName + i - 2) = '\0';
-}
+#include "../../common.h"
 
 int isContained(const char *searchterm, const char *line) {
     for (size_t l = 0; l < strlen(line); l++) {
@@ -55,7 +39,7 @@ int main(int argc, char *argv[]) {
 
     char *programName = (char *)malloc(sizeof(argv[0]));
     
-    getProgramName(argv[0], programName);
+    GetPrgName(argv[0], programName);
 
 
     if (argc < 2) { 
