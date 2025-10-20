@@ -2,6 +2,9 @@
 #define COMMON_INCLUDE
 
 #include <stdio.h>
+#include <stdlib.h>
+
+#define NELEMS(a) ( (sizeof(a)) / (sizeof(a[0])) )
 
 
 void GetPrgName(const char *programArg, char *programName) {
