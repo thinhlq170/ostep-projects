@@ -19,7 +19,7 @@ struct Except_Frame {
 };
 
 enum {
-    Except_enter = 0, Except_raised,
+    Except_entered = 0, Except_raised,
     Except_handled, Except_finalized
 };
 
@@ -48,26 +48,26 @@ void Except_raise(const T *e, const char *file, int line);
         Except_stack = &Except_frame; \
         /* end push */ \
         Except_flag = setjmp(Except_frame.env); \
-        if (Except_flag == Except_enter) { \
+        if (Except_flag == Except_entered) { \
 
 #define EXCEPT(e) \
-            if (Except_flag == Except_enter) Except_stack = Except_stack.prev; \ 
+            if (Except_flag == Except_entered) Except_stack = Except_stack->prev; \
         } else if (Except_frame.exception == &(e)) { \
                 Except_flag = Except_handled; \
             
 #define ELSE \
-            if (Except_flag == Except_enter) Except_stack = Except_stack.prev; \
+            if (Except_flag == Except_entered) Except_stack = Except_stack->prev; \
         } else {  \
                 Except_flag = Except_handled; \
 
 #define FINALLY \
-            if (Except_flag == Except_enter) Except_stack = Except_stack.prev; \
+            if (Except_flag == Except_entered) Except_stack = Except_stack->prev; \
         } { \
-            if (Except_flag == Except_enter) \
+            if (Except_flag == Except_entered) \
                 Except_flag = Except_finalized; \
 
 #define END_TRY \
-            if (Except_flag == Except_enter) Except_stack = Except_stack.prev; \
+            if (Except_flag == Except_entered) Except_stack = Except_stack.prev; \
         } if (Except_flag == Except_raised) RERAISE; \
     } while (0)
               
