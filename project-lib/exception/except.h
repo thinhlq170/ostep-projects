@@ -24,6 +24,7 @@ enum {
 };
 
 extern Except_Frame *Except_stack;
+extern const Except_T Assert_Failed;
 
 // 〈exported types 53〉
 // 〈exported variables 53〉
