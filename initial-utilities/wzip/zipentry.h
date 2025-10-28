@@ -6,6 +6,11 @@
 #define T Zip_T
 typedef struct T *T;
 
+struct T {
+    int count;
+    char character;
+};
+
 extern T Zip_new(char character);
 
 #undef T

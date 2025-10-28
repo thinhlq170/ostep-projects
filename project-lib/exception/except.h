@@ -31,7 +31,7 @@ extern const Except_T Assert_Failed;
 // 〈exported functions 48〉
 // 〈exported macros 48〉
 
-void Except_raise(const T *e, const char *file, int line);
+extern void Except_raise(const T *e, const char *file, int line);
 
 #define RAISE(e) Except_raise(&(e), __FILE__, __LINE__)
 #define RERAISE Except_raise(Except_frame.exception, \
