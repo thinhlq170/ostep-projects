@@ -73,23 +73,20 @@ int main(int argc, char *argv[]) {
                 entries[entryIndex] = entry;
             } else {
                 while (nextChar != '\0') {
-                    if (curChar == nextChar) {
-                        entry->count += 1;
-                        curChar = nextChar;
-                        batchIdx++;
-                        nextChar = *(batch + batchIdx);
+                    if (nextChar != curChar) {
+                        entries[entryIndex++] = entry; // Add current entry to the array
+                        entry = Zip_new(nextChar);  // initialize new entry for the next character
                     } else {
-                        entries[entryIndex++] = entry;
-                        if (nextChar != '\0') {
-                            entry = Zip_new(nextChar);
-                            curChar = nextChar;
-                            batchIdx++;
-                            nextChar = *(batch + batchIdx);
-                        }
-                        
+                        entry->count += 1;  // update the current entry
                     }
-                    if (nextChar == '\0')
+                    // shift forward next char and cur char
+                    curChar = nextChar;
+                    batchIdx++;
+                    nextChar = *(batch + batchIdx);
+                    // If the next character is the terminated character then add the current entry to the array
+                    if (nextChar == '\0') {
                         entries[entryIndex] = entry;
+                    }
                 }
             }
         }
